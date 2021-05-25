@@ -1,7 +1,7 @@
 APIVersion: 0
 data:
   networkrulesetpolicies:
-    - name: frontend
+    - name: frontend intra-app
       outgoingRules:
         - action: Allow
           logsDisabled: false
@@ -44,7 +44,7 @@ data:
           observationEnabled: false
           protocolPorts:
             - any
-      name: backend
+      name: backend intra-app
       outgoingRules:
         - action: Allow
           logsDisabled: false
@@ -57,17 +57,6 @@ data:
           observationEnabled: false
           protocolPorts:
             - any
-        - action: Allow
-          logsDisabled: false
-          object:
-            - - '@org:cloudaccount={{.Values.org.cloudAccount}}'
-              - '@org:group={{.Values.org.group}}'
-              - '@org:tenant={{.Values.org.tenant}}'
-              - '@org:kubernetes=nashville'
-              - app=database
-          observationEnabled: false
-          protocolPorts:
-            - any
       propagate: true
       subject:
         - - '@org:cloudaccount={{.Values.org.cloudAccount}}'
@@ -77,4 +66,4 @@ data:
           - app=backend
 identities:
   - networkrulesetpolicy
-label: CICDv1 Tennessee-Group-Kubernetes-Knoxville
+label: cicd-tennessee-knoxville-intra

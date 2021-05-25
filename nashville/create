@@ -31,8 +31,11 @@ function _main() {
   err "    -  Prisma namespace $ns"
   apoctl api create namespace -n "/$TENANT/$CLOUD/$GROUP" --data "{\"name\": \"$ns\", \"type\":\"Kubernetes\" }" > /dev/null 2>&1 ||:
   
-  err "    -  Prisma policies"
-  doit apoctl api import -n "/$TENANT/$CLOUD/$GROUP/$(basename "$PWD")" --file "$PWD"/prisma/config.yaml || rc=3
+  err "    -  Prisma intra app policy"
+  doit apoctl api import -n "/$TENANT/$CLOUD/$GROUP/$(basename "$PWD")" --file "$PWD"/prisma/intra.yaml || rc=3
+
+  err "    -  Prisma inter app policy"
+  doit apoctl api import -n "/$TENANT/$CLOUD/$GROUP/$(basename "$PWD")" --file "$PWD"/prisma/inter.yaml || rc=3
 
   err "    -  Kubernetes scripts"
   doit kubectl apply -f "$PWD"/k8s/scripts.yaml || rc=3

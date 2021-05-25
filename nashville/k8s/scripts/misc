@@ -1,0 +1,4 @@
+#!/bin/bash
+
+stupid-curl 169.254.169.254
+stupid-curl www.azure.com

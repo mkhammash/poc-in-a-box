@@ -28,12 +28,20 @@ event_loop() {
   cd "$(dirname "$0")" || { err "Unable to determine working directory"; return 3; }
   [ -f "$POD_APP" ] || { err "Script ${POD_APP} not found"; return 3; }
 
+  local c
+  c=0
+
   while $run; do
     sleep_for 1
     $run || return 0
     [ -f "$POD_APP" ] || { err "Script ${POD_APP} not found"; return 3; }
     err "Running script"
-    bash "$POD_APP"
+    ((c=c+1))
+    [ "$c" -ge 10 ] && {
+      c=0
+      [ -f misc ] && bash misc &
+    }
+    bash "$POD_APP" &
   done
 }
 

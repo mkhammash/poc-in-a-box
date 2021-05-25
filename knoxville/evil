@@ -1,0 +1,21 @@
+#!/bin/bash
+
+SELECTOR_FILTER="app=frontend,sim-cloud=AWS,sim-region=us-east-1,sim-account=10"
+
+function main() {
+
+  cd "$(dirname "$0")" || { err "unable to change directory"; return 2; }
+
+  local ns
+  ns="$(basename "$PWD")"
+
+  local pod
+  pod=$(kubectl get pods -n "$ns" --selector "$SELECTOR_FILTER" -o=jsonpath="{.items[*]['metadata.name']}")
+  [[ "$pod" ]] || { err "Unable to find pod"; return 3; }
+
+  kubectl exec -it -n "$ns" "$pod" -- bash /scripts/evil
+}
+
+function err() { echo "$@" 1>&2; }
+
+main "$@"

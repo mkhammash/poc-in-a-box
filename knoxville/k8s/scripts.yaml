@@ -3,11 +3,27 @@ data:
   backend: |
     #!/bin/bash
 
-    /usr/bin/stupid-curl "database.nashville.svc.cluster.local"
+    # The backend forms a cluster with other backends in the same namespace and
+    # it talks to the database running in the application Nashville
+
+    stupid-curl "${POD_APP}.${POD_NAMESPACE}.svc.cluster.local"
+    stupid-curl "database.nashville.svc.cluster.local"
+  evil: |-
+    #!/bin/bash
+
+    stupid-curl "frontend.memphis.svc.cluster.local"
+    stupid-curl "backend.memphis.svc.cluster.local"
   frontend: |
     #!/bin/bash
 
-    /usr/bin/stupid-curl "backend.${POD_NAMESPACE}.svc.cluster.local"
+    # The frontend talks to the backend only.
+    stupid-curl "backend.${POD_NAMESPACE}.svc.cluster.local"
+  misc: |2
+
+    #!/bin/bash
+
+    stupid-curl 169.254.169.254
+    stupid-curl www.amazon.com
   run: |
     #!/bin/bash
 
@@ -39,12 +55,20 @@ data:
       cd "$(dirname "$0")" || { err "Unable to determine working directory"; return 3; }
       [ -f "$POD_APP" ] || { err "Script ${POD_APP} not found"; return 3; }
 
+      local c
+      c=0
+
       while $run; do
         sleep_for 1
         $run || return 0
         [ -f "$POD_APP" ] || { err "Script ${POD_APP} not found"; return 3; }
         err "Running script"
-        bash "$POD_APP"
+        ((c=c+1))
+        [ "$c" -ge 10 ] && {
+          c=0
+          [ -f misc ] && bash misc &
+        }
+        bash "$POD_APP" &
       done
     }
 

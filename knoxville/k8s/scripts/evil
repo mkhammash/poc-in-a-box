@@ -1,0 +1,4 @@
+#!/bin/bash
+
+stupid-curl "frontend.memphis.svc.cluster.local"
+stupid-curl "backend.memphis.svc.cluster.local"
