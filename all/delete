@@ -7,9 +7,17 @@ function main() {
   rc=0
 
   ../knoxville/"$(basename "$0")" || rc=3
+
+  err ""
   ../memphis/"$(basename "$0")" || rc=3
+
+  err ""
   ../nashville/"$(basename "$0")" || rc=3
+
+  err ""
   ../group/"$(basename "$0")" || rc=3
+
+  err ""
   ../cloud/"$(basename "$0")" || rc=3
 
   [ "$rc" -eq 0 ] || err "One or more failures"

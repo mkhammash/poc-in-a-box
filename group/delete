@@ -26,8 +26,6 @@ function _main() {
   local rc
   rc=0
 
-  err "Removing Prisma policy"
-
   for id in $(apoctl api -n "/$TENANT/$CLOUD/$GROUP" list externalnetwork -f "normalizedTags matches cicd-tennessee-$(basename "$PWD")" | jq -r '.[].ID'); do
     err "    - removing network $id"
     doit apoctl api delete externalnetwork -n "/$TENANT/$CLOUD/$GROUP" "$id" || rc=3

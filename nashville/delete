@@ -27,18 +27,14 @@ function _main() {
   rc=0
   ns="$(basename "$PWD")"
   kubectl get ns "$ns" > /dev/null 2>&1 && {
-    err "Deleting Kubernetes Namespace $ns"
+    err "    - Kubernetes Namespace $ns"
     doit kubectl delete ns "$ns" || rc=3
-  } || {
-    err "Kubernetes Namespace $ns does not exist"
   }
 
   id=$(apoctl api list namespaces -n "/$TENANT/$CLOUD/$GROUP" -f name=="/$TENANT/$CLOUD/$GROUP/$(basename "$PWD")" | jq -r '.[].ID')
   [[ "$id" ]] && {
-    err "Deleting Prisma Namespace $ns with id $id"
+    err "    -  Prisma Namespace $ns with id $id"
     doit apoctl api delete namespace  -n "/$TENANT/$CLOUD/$GROUP" "$id" || rc=3
-  } || {
-    err "Prisma Namespace $ns does not exist"
   }
 
   err "done"
