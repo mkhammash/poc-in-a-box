@@ -5,7 +5,7 @@
 
 function main() {
   local rc out
-  out=$("$@" 2>&1) && { err "done"; return 0; }
+  out=$("$@" 2>&1) && { return 0; }
   rc=$?
   err "fail; cmd->[$*]; returned->$rc; std*->[$out]"
   return $rc

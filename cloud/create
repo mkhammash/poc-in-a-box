@@ -4,7 +4,8 @@
 function main() {
   
   cd "$(dirname "$0")" || { err "unable to change directory"; return 2; }
-  err "creating $(basename "$PWD")"
+  err "$(basename "$PWD")"
+  err "  creating"
 
   # shellcheck disable=SC2155
   export PATH="../bin/scripts:../bin/$(uname | tr '[:upper:]' '[:lower:]')/$(uname -m):$PATH"
@@ -25,48 +26,45 @@ function _main() {
   local rc
   rc=0
 
-  err "Updating namespace with tags"
+  err "    - namespace tags"
   local id
   id=$(apoctl api list namespaces -n "/$TENANT" -f name=="/$TENANT/$CLOUD" | jq -r '.[].ID')
   [[ "$id" ]] && {
     #doit apoctl api update -n "/$TENANT" namespace "$id" -d '{ “tagPrefixes”: [ “app=”,"sim-account=” ] }'
     doit apoctl api update -n "/$TENANT" namespace "$id" -d "$(yq e '' "$PWD"/prisma/tagprefixes.yaml -j)"
-  } || {
-    err "Failed to install tags. Aborting."
-    return 3
   }
 
-  err "Installing secops policy"
+  err "    - SecOps policy"
   doit apoctl api import -n "/$TENANT/$CLOUD" --file "$PWD"/prisma/secops.yaml || rc=3
 
-  err "Installing RFC1918 network"
+  err "    - RFC1918 network"
   doit apoctl api import -n "/$TENANT/$CLOUD" --file "$PWD"/prisma/rfc1918.yaml || rc=3
 
-  err "Installing internet network"
+  err "    - Internet network"
   doit apoctl api import -n "/$TENANT/$CLOUD" --file "$PWD"/prisma/internet.yaml || rc=3
 
-
   [[ "$CLOUD_NTP" ]] && {
-    err "Installing NTP network & policy"
+    err "    - NTP network & policy"
     # shellcheck disable=SC2086
     update prisma/ntp.yaml $CLOUD_NTP
     doit apoctl api import -n "/$TENANT/$CLOUD" --file "$PWD"/prisma/ntp.yaml || rc=3
   }
 
   [[ "$CLOUD_DNS" ]] && {
-    err "Installing DNS network & policy"
+    err "    - DNS network & policy"
     # shellcheck disable=SC2086
     update prisma/dns.yaml $CLOUD_DNS
     doit apoctl api import -n "/$TENANT/$CLOUD" --file "$PWD"/prisma/dns.yaml || rc=3
   }
 
   [[ "$META_DATA_API" ]] && {
-    err "Installing MetaDataAPI network & policy"
+    err "    - MetaDataAPI network & policy"
     # shellcheck disable=SC2086
     update prisma/metadataapi.yaml $META_DATA_API
     doit apoctl api import -n "/$TENANT/$CLOUD" --file "$PWD"/prisma/metadataapi.yaml || rc=3
   }
 
+  err "done"
   return "$rc" 
 }
 

@@ -4,7 +4,8 @@
 function main() {
   
   cd "$(dirname "$0")" || { err "unable to change directory"; return 2; }
-  err "deleting $(basename "$PWD")"
+  err "$(basename "$PWD")"
+  err "  deleting"
 
   # shellcheck disable=SC2155
   export PATH="../bin/scripts:../bin/$(uname | tr '[:upper:]' '[:lower:]')/$(uname -m):$PATH"
@@ -39,7 +40,9 @@ function _main() {
   } || {
     err "Prisma Namespace $ns does not exist"
   }
-  return "$rc"
+
+  err "done"
+  return "$rc" 
 }
 
 function err() { echo "$@" 1>&2; }

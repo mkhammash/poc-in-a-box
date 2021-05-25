@@ -4,7 +4,8 @@
 function main() {
   
   cd "$(dirname "$0")" || { err "unable to change directory"; return 2; }
-  err "deleting $(basename "$PWD")"
+  err "$(basename "$PWD")"
+  err "  deleting"
 
   # shellcheck disable=SC2155
   export PATH="../bin/scripts:../bin/$(uname | tr '[:upper:]' '[:lower:]')/$(uname -m):$PATH"
@@ -28,16 +29,17 @@ function _main() {
   err "Removing Prisma policy"
 
   for id in $(apoctl api -n "/$TENANT/$CLOUD/$GROUP" list externalnetwork -f "normalizedTags matches cicd-tennessee-$(basename "$PWD")" | jq -r '.[].ID'); do
-    err "Removing network $id"
+    err "    - removing network $id"
     doit apoctl api delete externalnetwork -n "/$TENANT/$CLOUD/$GROUP" "$id" || rc=3
   done
 
   for id in $(apoctl api -n "/$TENANT/$CLOUD/$GROUP" list networkrulesetpolicy -f "normalizedTags matches cicd-tennessee-$(basename "$PWD")" | jq -r '.[].ID'); do
-    err "Removing policy $id"
+    err "    - removing policy $id"
     doit apoctl api delete networkrulesetpolicy -n "/$TENANT/$CLOUD/$GROUP" "$id" || rc=3
   done
 
-  return $rc
+  err "done"
+  return "$rc" 
 }
 
 function err() { echo "$@" 1>&2; }

@@ -4,7 +4,8 @@
 function main() {
   
   cd "$(dirname "$0")" || { err "unable to change directory"; return 2; }
-  err "creating $(basename "$PWD")"
+  err "$(basename "$PWD")"
+  err "  creating"
 
   # shellcheck disable=SC2155
   export PATH="../bin/scripts:../bin/$(uname | tr '[:upper:]' '[:lower:]')/$(uname -m):$PATH"
@@ -29,7 +30,7 @@ function _main() {
     [ "$KUBE_DNS" == "auto" ] && {
       KUBE_DNS=$(kubectl get services -n kube-system kube-dns -o=jsonpath="{.spec.clusterIP}")
       [[ "$KUBE_DNS" ]] && {
-        err "Installing Kube DNS network & policy"
+        err "    - Kube DNS network & policy"
         # shellcheck disable=SC2086
         update prisma/dns.yaml $KUBE_DNS
         doit apoctl api import -n "/$TENANT/$CLOUD/$GROUP" --file "$PWD"/prisma/dns.yaml || rc=3
@@ -43,7 +44,7 @@ function _main() {
     [ "$KUBE_NODES" == "auto" ] && {
       KUBE_NODES=$(kubectl get nodes -o=jsonpath="{.items[*].status.addresses[0].address}")
       [[ "$KUBE_NODES" ]] && {
-        err "Installing Kube Nodes network & policy"
+        err "    -  Kube Nodes network & policy"
         # shellcheck disable=SC2086
         update prisma/nodes.yaml $KUBE_NODES
         doit apoctl api import -n "/$TENANT/$CLOUD/$GROUP" --file $"$PWD"/prisma/nodes.yaml || rc=3
@@ -57,7 +58,7 @@ function _main() {
     [ "$KUBE_API" == "auto" ] && {
       KUBE_API=$(kubectl get svc -n default -o=jsonpath="{.items[*].spec.clusterIP}")
       [[ "$KUBE_API" ]] && {
-        err "Installing Kube API network & policy"
+        err "    -  Kube API network & policy"
         # shellcheck disable=SC2086
         update prisma/kubeapi.yaml $KUBE_API
         doit apoctl api import -n "/$TENANT/$CLOUD/$GROUP" --file $"$PWD"/prisma/kubeapi.yaml || rc=3
@@ -69,12 +70,13 @@ function _main() {
 
   [[ "$ISTIO_ENABLED" ]] && {
     "$ISTIO_ENABLED" && {
-      err "Installing Istio policy"
+      err "    -  Istio policy"
       doit apoctl api import -n "/$TENANT/$CLOUD/$GROUP" --file $"$PWD"/prisma/istio-kube-callback.yaml || rc=3
     } 
   }
 
-  return $rc
+  err "done"
+  return "$rc" 
 }
 
 function update() {
