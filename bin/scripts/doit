@@ -1,0 +1,30 @@
+#!/bin/bash -e
+
+# MAX_TRIES=25
+# FAIL_SLEEP=5
+
+function main() {
+  local rc out
+  out=$("$@" 2>&1) && { err "done"; return 0; }
+  rc=$?
+  err "fail; cmd->[$*]; returned->$rc; std*->[$out]"
+  return $rc
+
+  # local c
+  # c=1
+  # while true; do
+  #   err "Running $c of 25 (max)"
+  #   "$@" && return 0
+  #   ((c=c+1))
+  #   [ "$c" -gt $MAX_TRIES ] && {
+  #     err "too many failures"
+  #     return 3
+  #   }
+  #   err "Command failed; will try again in $FAIL_SLEEP seconds"
+  #   sleep $FAIL_SLEEP
+  # done
+}
+
+function err() { echo "$@" 1>&2; }
+
+main "$@"

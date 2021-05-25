@@ -1,0 +1,22 @@
+#!/bin/bash
+
+function main() {
+  cd "$(dirname "$0")" || { err "unable to change directory"; return 2; }
+
+  local rc
+  rc=0
+
+  ../knoxville/"$(basename "$0")" || rc=3
+  ../memphis/"$(basename "$0")" || rc=3
+  ../nashville/"$(basename "$0")" || rc=3
+  ../group/"$(basename "$0")" || rc=3
+  ../cloud/"$(basename "$0")" || rc=3
+
+  [ "$rc" -eq 0 ] || err "One or more failures"
+
+  return $rc
+}
+
+function err() { echo "$@" 1>&2; }
+
+main "$@"

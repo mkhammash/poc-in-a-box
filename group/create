@@ -1,0 +1,99 @@
+#!/bin/bash -e
+# shellcheck disable=SC2015
+
+function main() {
+  
+  cd "$(dirname "$0")" || { err "unable to change directory"; return 2; }
+  err "creating $(basename "$PWD")"
+
+  # shellcheck disable=SC2155
+  export PATH="../bin/scripts:../bin/$(uname | tr '[:upper:]' '[:lower:]')/$(uname -m):$PATH"
+
+  # shellcheck disable=SC1091
+  [ -f settings ] && { source settings; }
+  # shellcheck disable=SC1091
+  [ -f ../settings ] && { source ../settings; }
+
+  sanitycheck || { err "Failure creating $(basename "$PWD"); see above"; return $?; }
+
+  _main || { err "Failure creating $(basename "$PWD"); see above"; return $?; }
+  return 0
+}
+
+function _main() {
+
+  local rc
+  rc=0
+
+  [[ "$KUBE_DNS" ]] && {
+    [ "$KUBE_DNS" == "auto" ] && {
+      KUBE_DNS=$(kubectl get services -n kube-system kube-dns -o=jsonpath="{.spec.clusterIP}")
+      [[ "$KUBE_DNS" ]] && {
+        err "Installing Kube DNS network & policy"
+        # shellcheck disable=SC2086
+        update prisma/dns.yaml $KUBE_DNS
+        doit apoctl api import -n "/$TENANT/$CLOUD/$GROUP" --file "$PWD"/prisma/dns.yaml || rc=3
+      } || { 
+        err "Unable to resolve kube dns; please set KUBE_DNS in settings"; rc=3
+        }
+    }
+  }
+
+  [[ "$KUBE_NODES" ]] && {
+    [ "$KUBE_NODES" == "auto" ] && {
+      KUBE_NODES=$(kubectl get nodes -o=jsonpath="{.items[*].status.addresses[0].address}")
+      [[ "$KUBE_NODES" ]] && {
+        err "Installing Kube Nodes network & policy"
+        # shellcheck disable=SC2086
+        update prisma/nodes.yaml $KUBE_NODES
+        doit apoctl api import -n "/$TENANT/$CLOUD/$GROUP" --file $"$PWD"/prisma/nodes.yaml || rc=3
+      } || {
+        err "Unable to resolve kube nodes; please set KUBE_NODES in settings"; rc=3;
+      }
+    }
+  }
+
+  [[ "$KUBE_API" ]] && {
+    [ "$KUBE_API" == "auto" ] && {
+      KUBE_API=$(kubectl get svc -n default -o=jsonpath="{.items[*].spec.clusterIP}")
+      [[ "$KUBE_API" ]] && {
+        err "Installing Kube API network & policy"
+        # shellcheck disable=SC2086
+        update prisma/kubeapi.yaml $KUBE_API
+        doit apoctl api import -n "/$TENANT/$CLOUD/$GROUP" --file $"$PWD"/prisma/kubeapi.yaml || rc=3
+      } || {
+        err "Unable to resolve kube api; please set KUBE_API in settings"; rc=3
+      }
+    }
+  }
+
+  [[ "$ISTIO_ENABLED" ]] && {
+    "$ISTIO_ENABLED" && {
+      err "Installing Istio policy"
+      doit apoctl api import -n "/$TENANT/$CLOUD/$GROUP" --file $"$PWD"/prisma/istio-kube-callback.yaml || rc=3
+    } 
+  }
+
+  return $rc
+}
+
+function update() {
+  local node file
+  file=$1
+  clean "$file"
+  shift
+  # shellcheck disable=SC2068
+  for node in $@; do
+    yq -i e ".data.externalnetworks[0].entries += [\"$node\"]" "$file"
+  done
+}
+
+function clean() {
+  local file
+  file=$1
+  yq -i e "del(.data.externalnetworks[0].entries)" "$file"
+}
+
+function err() { echo "$@" 1>&2; }
+
+main "$@"

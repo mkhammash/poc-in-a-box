@@ -1,0 +1,35 @@
+APIVersion: 0
+data:
+  externalnetworks:
+    - annotations:
+      associatedTags:
+        - 'externalnetwork:name=Kube API'
+      name: Kube API
+      propagate: true
+      entries:
+        - 10.100.0.1
+  networkrulesetpolicies:
+    - annotations:
+      associatedTags:
+      description: Kube API
+      name: Kube API
+      outgoingRules:
+        - action: Allow
+          logsDisabled: false
+          object:
+            - - '@org:cloudaccount={{.Values.org.cloudAccount}}'
+              - '@org:group={{.Values.org.group}}'
+              - '@org:tenant={{.Values.org.tenant}}'
+              - 'externalnetwork:name=Kube API'
+          observationEnabled: false
+          protocolPorts:
+            - tcp/443
+      propagate: true
+      subject:
+        - - '@org:cloudaccount={{.Values.org.cloudAccount}}'
+          - '@org:group={{.Values.org.group}}'
+          - '@org:tenant={{.Values.org.tenant}}'
+identities:
+  - networkrulesetpolicy
+  - externalnetwork
+label: cicd-tennessee-group-kubeapi

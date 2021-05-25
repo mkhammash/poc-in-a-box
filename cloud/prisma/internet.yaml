@@ -1,0 +1,14 @@
+APIVersion: 0
+data:
+  externalnetworks:
+    - associatedTags:
+        - 'externalnetwork:name=Internet'
+        - 'externalnetwork:name=Any'
+        - 'externalnetwork:name=External'
+      entries:
+        - 0.0.0.0/0
+      name: RFC1918
+      propagate: true
+identities:
+  - externalnetwork
+label: cicd-tennessee-cloud-internet

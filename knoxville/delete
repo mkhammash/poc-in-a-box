@@ -1,0 +1,47 @@
+#!/bin/bash -e
+# shellcheck disable=SC2015
+
+function main() {
+  
+  cd "$(dirname "$0")" || { err "unable to change directory"; return 2; }
+  err "deleting $(basename "$PWD")"
+
+  # shellcheck disable=SC2155
+  export PATH="../bin/scripts:../bin/$(uname | tr '[:upper:]' '[:lower:]')/$(uname -m):$PATH"
+
+  # shellcheck disable=SC1091
+  [ -f settings ] && { source settings; }
+  # shellcheck disable=SC1091
+  [ -f ../settings ] && { source ../settings; }
+
+  sanitycheck || { err "Failure deleting $(basename "$PWD"); see above"; return $?; }
+
+  _main || { err "Failure deleting $(basename "$PWD"); see above"; return $?; }
+  return 0
+}
+
+function _main() {
+
+  local rc ns
+  rc=0
+  ns="$(basename "$PWD")"
+  kubectl get ns "$ns" > /dev/null 2>&1 && {
+    err "Deleting Kubernetes Namespace $ns"
+    doit kubectl delete ns "$ns" || rc=3
+  } || {
+    err "Kubernetes Namespace $ns does not exist"
+  }
+
+  id=$(apoctl api list namespaces -n "/$TENANT/$CLOUD/$GROUP" -f name=="/$TENANT/$CLOUD/$GROUP/$(basename "$PWD")" | jq -r '.[].ID')
+  [[ "$id" ]] && {
+    err "Deleting Prisma Namespace $ns with id $id"
+    doit apoctl api delete namespace  -n "/$TENANT/$CLOUD/$GROUP" "$id" || rc=3
+  } || {
+    err "Prisma Namespace $ns does not exist"
+  }
+  return "$rc"
+}
+
+function err() { echo "$@" 1>&2; }
+
+main "$@"

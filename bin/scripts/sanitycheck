@@ -1,0 +1,24 @@
+#!/bin/bash -e
+
+msg=""
+
+function main() {
+  [[ "$TENANT" ]] || add "TENANT"
+  [[ "$CLOUD" ]] || add "CLOUD"
+  [[ "$GROUP" ]] || add "GROUP"
+  [[ "$msg" ]] && {
+    err "Missing $msg"
+    return 3
+  }
+  return 0
+}
+
+function add() {
+  [[ "$msg" ]] && { msg="$msg, $*"; return 0; }
+  msg="$*"
+  return 0
+}
+
+function err() { echo "$@" 1>&2; }
+
+main "$@"

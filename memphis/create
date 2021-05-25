@@ -1,0 +1,49 @@
+#!/bin/bash -e
+
+function main() {
+  
+  cd "$(dirname "$0")" || { err "unable to change directory"; return 2; }
+  err "building $(basename "$PWD")"
+
+  # shellcheck disable=SC2155
+  export PATH="../bin/scripts:../bin/$(uname | tr '[:upper:]' '[:lower:]')/$(uname -m):$PATH"
+
+  # shellcheck disable=SC1091
+  [ -f settings ] && { source settings; }
+  # shellcheck disable=SC1091
+  [ -f ../settings ] && { source ../settings; }
+
+  sanitycheck || { err "Failure creating $(basename "$PWD"); see above"; return $?; }
+
+  _main || { err "Failure creating $(basename "$PWD"); see above"; return $?; }
+  return 0
+}
+
+function _main() {
+
+  local rc
+  rc=0
+  err "Applying Kubernetes Namespace Config"
+  doit kubectl apply -f "$PWD"/k8s/ns.yaml || rc=3
+
+  ns="$(basename "$PWD")"
+  apoctl api create namespace -n "/$TENANT/$CLOUD/$GROUP" --data "{\"name\": \"$ns\", \"type\":\"Kubernetes\" }" > /dev/null 2>&1 ||:
+  
+  err "Applying Prisma Config"
+  doit apoctl api import -n "/$TENANT/$CLOUD/$GROUP/$(basename "$PWD")" --file "$PWD"/prisma/config.yaml || rc=3
+
+  err "Applying Kubernetes Config"
+  doit kubectl apply -f "$PWD"/k8s/scripts.yaml || rc=3
+  doit kubectl apply -f "$PWD"/k8s/service.yaml || rc=3
+  doit kubectl apply -f "$PWD"/k8s/deployment.yaml || rc=3
+
+  [[ "$ISTIO_ENABLED" ]] && { 
+     doit kubectl apply -f "$PWD"/k8s/deployment.yaml || rc=3
+  }
+  
+  return "$rc"
+}
+
+function err() { echo "$@" 1>&2; }
+
+main "$@"
