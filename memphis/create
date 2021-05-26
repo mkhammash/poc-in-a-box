@@ -52,7 +52,10 @@ function _main() {
   }
   
   err "done"
-  return "$rc" 
+
+  [[ "$NOBANNER" ]] || { cat ../.banner >&2; }
+
+  return "$rc"
 }
 
 function err() { echo "$@" 1>&2; }

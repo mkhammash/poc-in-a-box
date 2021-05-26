@@ -5,6 +5,8 @@ function main() {
 
   fail=false
 
+  export NOBANNER="true"
+
   ../cloud/"$(basename "$0")" || { fail=true; }
   
   err ""
@@ -20,7 +22,7 @@ function main() {
   ../knoxville/"$(basename "$0")" || { fail=true; }
 
   "$fail" || {
-    cat ../.banner
+    cat ../.banner >&2
     return 0
   }
 
