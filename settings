@@ -1,25 +1,19 @@
-# TENANT is a required setting.
+###############################################################################
+# Required config
+###############################################################################
+
 export TENANT=806775361903163392
-
-# CLOUD is required for any policy at and below the CLOUD level.
-# You will almost certainly need it to be set.
 export CLOUD=jody
-
-# GROUP is required for any policy at and below the GROUP (or Kubernetes)
-# level. You will almost certainly need it to be set.
 export GROUP=ek1-us-east-2-eksctl-io
 
-###############################################################################
+export APOCTL_API="https://api.east-01.network.prismacloud.io"
 
-# All of the APOCTL variables may be set
-# export APOCTL_API="https://api.east-01.network.prismacloud.io"
-
-# export APOCTL_API_SKIP_VERIFY=false # default
-# export APOCTL_API=
-# export APOCTL_NAMESPACE=
+# There are a few situations where APOCTL_API_SKIP_VERIFY may be necessary
+# export APOCTL_API_SKIP_VERIFY=false
 
 ###############################################################################
-
+# Cloud level config
+###############################################################################
 # If ISTIO_ENABLED is set to true then Kubernetes Istio config will be applied
 # to the application(s).
 # export ISTIO_ENABLED=true # default false
@@ -41,6 +35,8 @@ export CLOUD_NTP=169.254.169.123
 # within the cloud to access this service on port 80
 export META_DATA_API=169.254.169.254
 
+###############################################################################
+# Group (Kubernets) level config
 ###############################################################################
 
 # If KUBE_DNS is set to auto or one or more IP addresses or CIDRs then a
@@ -64,3 +60,12 @@ export KUBE_NODES=auto
 # said Kube API on port 443.
 export KUBE_API=auto
 # export KUBE_API=2.2.2.2 3.3.3.3 hostname.domain
+#
+###############################################################################
+# System stuff (probably dont change)
+###############################################################################
+
+# This assumes you are in the same directory
+export PATH=$PWD/bin/scripts:$PATH
+
+###############################################################################

@@ -3,23 +3,51 @@
 ## Overview
 This is an application designed for Prisma Network Security Module demo's and POV's.
 
-## Directories
-The directories 'cloud', 'group', 'knoxville', 'memphis' and 'nashville' hold Prisma and/or Kubernetes configuration. They also each contain a script named 'create' and 'delete'. These scripts are used to create and delete policy. The directory 'all' contains the scripts 'create' and 'delete' only. These scripts can be used to call the other 'create' and 'delete' scripts in the correct order. If the scripts in all are not used it is important that the 'create' and 'delete' scripts be called in the correct order. For 'create' the order is 'cloud', 'group', and then 'knoxville', 'memphis' and 'nashville' in any order. For 'delete', 'knoxville', 'memphis' and 'nashville' must be deleted first in any order and then 'group' then 'cloud'. 
+## Details
 
-### Cloud
-This directory holds Prisma configuration and it aligns with the customer 'Cloud Account' namespace which is a child of Tenant. The configuration will take care of configuring tag prefixes and creating account level policy and networks.
+### Prerequisite's
+* A 'Prisma Cloud' account and corresponding Tenant ID
+* A public cloud account (AWS, AZURE, GCP) or private cloud
+* A Kubernetes cluster (EKS, AKS, GKE, OC4) and corresponding kubectl and config/credentials
+* A Linux or Mac workstation
 
-### Group
-This directory holds Prisma configuration and it aligns with the customer Kubernetes cluster namespace which is a child of the 'Cloud Account'. The create script will automatically resolve Kubernetes level information and create policies such as Kube DNS. The create script should be called after the cloud create script. The delete script should be called before the cloud delete script.
+You will need these variables. You can obtain them from your Prisma Account or your SE.
+| Variable | Value |
+| $TENANT | ______________ |
+| $CLOUD  | ______________ |
+| $GROUP  | ______________ |
 
-### Nashville
-This directory holds Prisma and Kubernetes configuration for an application of the same name. It is a child of the 'group' and also a Kubernetes namespace. This application is composed of a "databases" that all communicate with each other. The Prisma policy permits these flows. The Prisma policy also permits flows from Knoxville and Memphis "backends".
+### Directories
+The directory bin holds scripts and executables that will be used as part of the POV. The directory 'all' holds convenience scripts that will be documented later. The directories 'cloud', 'group', 'knoxville', 'memphis' and 'nashville' align with Prisma namespaces. The mapping is as follows:
 
-### Knoxville & Memphis
-These directores are virtually identical with the exception of the name. They are both composed of a "frontend" and "backend". The "frontend" communicates with the "backends" and "backends" communicate with each other. For clarification "frontends" should not talk to other "frontends". The "backend" also communicates with the "database" in Nashville ("database" is the server).
+| Directory | Prisma Namespace | Tag | Alias |
+| cloud | /$TENANT/$CLOUD | @org:cloudaccount ||
+| group | /$TENANT/$CLOUD/$GROUP | @org:tenant | K8S Cluster |
+| nashville | /$TENANT/$CLOUD/$GROUP/nashville | @org:kubernetes | K8S Namespace |
+| memphis | /$TENANT/$CLOUD/$GROUP/memphis | @org:kubernetes | K8S Namespace |
+| knoxville | /$TENANT/$CLOUD/$GROUP/knoxville | @org:kubernetes | K8S Namespace |
 
-## Simulated Cloud, Region & Account
-The tags 'sim-cloud', 'sim-region' and 'sim-account' are used for simulation purposes. This allows us to simulate multiple clouds, regions and accounts within our single cluster. To accomplish this each deployment.yaml is composed of multiple deployments with these aforementioned tags. For example a podset named frontend will actually be named frontend1, frontend2, frontend...N.
+Each directory contains one or more of the following:
+* Kubernetes config in YAML format
+* Prisma Network Security config in YAML format
+* Scripts written in bash
+
+The directories cloud and group hold Prisma Network Security config that will be applied to the cloud account and group (Kubernetes cluster). The directories Nashville, Memphis and Knoxville are each applications. Nashville and Memphis are virtually identical with the exception of their name. They contain a frontend and backend pod type. The backends form a cluster and the frontends talk to all of the backends. Frontends do not talk to each other. The backends for both also talk to the Nashville app database pod type. The Nashville app has only a single app type; the aforementioned database. The database pods create a cluster inside the Nashville app and accept incoming connections from Memphis and Knoxville backend pod types.
+
+### Scripts
+The directories cloud, group, knoxville, memphis and nashville each contain a script named 'create' and 'delete'. The 'create' script is used to apply Kubernetes and/or Prisma configuration and the 'delete' script is used to remove said configuration. The directories memphis and knoxville also include a script called 'attack' that is used to cause the app to make unauthorized connections.
+
+The directory 'all' also holds a script named 'create' and 'delete'. These are convenience scripts that will call the create or delete script in each of the aforementioned directories in the correct order. 
+
+The order of 'create' is
+1. Cloud
+1. Group
+1. App (nashville, memphis, knoxville)
+
+The order of 'delete' is
+1. App (nashville, memphis, knoxville)
+1. Group
+1. Cloud
 
 ## Policy
 
@@ -34,6 +62,44 @@ These are policies based on company (or organization) policies. These are inheri
 ### Application
 These are policies that govern the behaviour of an application for both intra-application and inter-application communication. These are usually under the control of the application team and stored in the CICD pipleline. When workloads running in the App need to communicate the App team may create policy to authorize these flows. The security control is the CICD pipeline (code reviews, etc). For inter-app communication both App teams must create a policy to permit the flow. Once again the security control is the CICD pipeline.
 
-1. Deploy this
-1. View the "App Dependency Map"
-1. Look at the policies
+## Instructions
+
+### Quick
+
+1. Clone this repo
+1. Change directory into the repo
+1. Edit the file 'settings' and update TENANT, CLOUD, and GROUP
+1. Source settings into your shell environment
+1. Configure your Prisma App Creds
+1. Run the script all/create
+1. Once you are finished run the script all/delete
+
+### Example
+```bash
+git clone https://github.com/aporeto-se/poc-in-a-box.git
+cd poc-in-a-box
+# edit the file settings
+source env_shell
+apoctl configure -n /$GROUP/$CLOUD -t $TOKEN
+all/create
+```
+
+Whe finished
+```bash
+all/delete
+```
+
+## POV
+Before starting the POV you should have poc-in-a-box up and running. We will be working from the Prisma Cloud console unless otherwise noted. We will also assume that you are working from "Network Security" and the namespace level is group (your Kubernetes cluster)
+
+### Visibility
+
+1. Go to AppDependencyMap
+1. Note the solid green flows between workloads (Hexagon Icons)
+..* in the same namespace
+..* in different namespaces
+1. Note the flows to/from networks (Square Icon) such as MetaDataAPI, Google, KubeDNS, etc
+1. Click on a flow and take note of the policy
+1. Go to Rulesets
+
+

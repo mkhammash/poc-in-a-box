@@ -10,11 +10,6 @@ function main() {
   # shellcheck disable=SC2155
   export PATH="../bin/scripts:../bin/$(uname | tr '[:upper:]' '[:lower:]')/$(uname -m):$PATH"
 
-  # shellcheck disable=SC1091
-  [ -f settings ] && { source settings; }
-  # shellcheck disable=SC1091
-  [ -f ../settings ] && { source ../settings; }
-
   sanitycheck || { err "Failure deleting $(basename "$PWD"); see above"; return $?; }
 
   _main || { err "Failure deleting $(basename "$PWD"); see above"; return $?; }
