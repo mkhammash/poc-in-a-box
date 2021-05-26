@@ -8,17 +8,9 @@ function main() {
   export NOBANNER="true"
 
   ../cloud/"$(basename "$0")" || { fail=true; }
-  
-  err ""
   ../group/"$(basename "$0")" || { fail=true; }
-
-  err ""
   ../nashville/"$(basename "$0")" || { fail=true; }
-
-  err ""
   ../memphis/"$(basename "$0")" || { fail=true; }
-
-  err ""
   ../knoxville/"$(basename "$0")" || { fail=true; }
 
   "$fail" || {
