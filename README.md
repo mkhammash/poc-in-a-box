@@ -13,9 +13,9 @@ This is an application designed for Prisma Network Security Module demo's and PO
 
 You will need these variables. You can obtain them from your Prisma Account or your SE.
 | Variable | Value          |
-| -------- | ------------------- |
-| $TENANT  |                |
-| $CLOUD   |                |
+| -------- | -------------- |
+| $TENANT  | .               |
+| $CLOUD   | .               |
 | $GROUP   |                |
 
 ### Directories
