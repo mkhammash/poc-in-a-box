@@ -22,6 +22,7 @@ You will need these variables. You can obtain them from your Prisma Account or y
 The directory bin holds scripts and executables that will be used as part of the POV. The directory 'all' holds convenience scripts that will be documented later. The directories 'cloud', 'group', 'knoxville', 'memphis' and 'nashville' align with Prisma namespaces. The mapping is as follows:
 
 | Directory | Prisma Namespace | Tag | Alias |
+| --- | --- | --- | --- |
 | cloud | /$TENANT/$CLOUD | @org:cloudaccount ||
 | group | /$TENANT/$CLOUD/$GROUP | @org:tenant | K8S Cluster |
 | nashville | /$TENANT/$CLOUD/$GROUP/nashville | @org:kubernetes | K8S Namespace |
