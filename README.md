@@ -11,7 +11,7 @@ This is an application designed for Prisma Network Security Module demo's and PO
 * A Kubernetes cluster (EKS, AKS, GKE, OC4) and corresponding kubectl and config/credentials
 * A Linux or Mac workstation
 
-You will need these variables. You can obtain them from your Prisma Account or your SE.
+You will need the value for TENANT, CLOUD and GROUP. TENANT is the name of your top level namespace and also your Prisma Tenant Account ID. CLOUD is the name of the namespace for the Cloud Account that has been on boarded and for which you will be working with. GROUP is the name of the namespace that corresponds to your Kubernetes cluster that we will be using as part of this POV. It is a best practice to name the GROUP namespace and your Kubernetes cluster the same.
 | Variable | Value             |
 | -------- | ----------------- |
 | $TENANT  | |
