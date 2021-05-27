@@ -12,10 +12,11 @@ This is an application designed for Prisma Network Security Module demo's and PO
 * A Linux or Mac workstation
 
 You will need these variables. You can obtain them from your Prisma Account or your SE.
-| Variable | Value |
-| $TENANT | ______________ |
-| $CLOUD  | ______________ |
-| $GROUP  | ______________ |
+| Variable | Value          |
+| -------- | -------------- |
+| $TENANT  | ______________ |
+| $CLOUD   | ______________ |
+| $GROUP   | ______________ |
 
 ### Directories
 The directory bin holds scripts and executables that will be used as part of the POV. The directory 'all' holds convenience scripts that will be documented later. The directories 'cloud', 'group', 'knoxville', 'memphis' and 'nashville' align with Prisma namespaces. The mapping is as follows:
