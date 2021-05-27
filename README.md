@@ -1,7 +1,7 @@
 # poc-in-a-box
 
 ## Overview
-This is an application designed for Prisma Network Security Module demo's and POV's.
+This repo is a collection of Kubernetes config (YAML), Prisma config (YAML) and Bash scripts. Its purpose is to facilitate a customer POV of the Prisma Cloud Network Security product on Kubernetes. Usually the POV will be ran on a public cloud managed Kubernetes service such as AWS EKS, Azure AKS, or GCP GKE. It is also possible to run on other implementations of Kubernetes as supported by the Prisma product. Normally your Prisma Account SE will assist you in the use of this repo. At the end of the POV you should have a fundamental understanding of the Prisma Cloud Network Security solution as documented in the objectives section.
 
 ## Details
 
@@ -10,6 +10,8 @@ This is an application designed for Prisma Network Security Module demo's and PO
 * A public cloud account (AWS, AZURE, GCP) or private cloud
 * A Kubernetes cluster (EKS, AKS, GKE, OC4) and corresponding kubectl and config/credentials
 * A Linux or Mac workstation
+* Rudimetary understanding of the Bash shell and the ability to run basic commands
+* Rudimetary understanding of Kubernetes and ability to run basic Kubernetes commands
 
 You will need the value for TENANT, CLOUD and GROUP. TENANT is the name of your top level namespace and also your Prisma Tenant Account ID. CLOUD is the name of the namespace for the Cloud Account that has been on boarded and for which you will be working with. GROUP is the name of the namespace that corresponds to your Kubernetes cluster that we will be using as part of this POV. It is a best practice to name the GROUP namespace and your Kubernetes cluster the same.
 | Variable | Value             |
@@ -19,7 +21,7 @@ You will need the value for TENANT, CLOUD and GROUP. TENANT is the name of your 
 | $GROUP   | |
 
 ### Directories
-The directory bin holds scripts and executables that will be used as part of the POV. The directory 'all' holds convenience scripts that will be documented later. The directories 'cloud', 'group', 'knoxville', 'memphis' and 'nashville' align with Prisma namespaces. The mapping is as follows:
+The directory bin holds scripts and executables that will be used as part of the POV. The directory 'all' holds convenience scripts that will be documented later. The directories 'cloud', 'group', 'knoxville', 'memphis' and 'nashville' align with Prisma namespaces and we will refer to them collectively as "namespace directories". We will refer to the directories 'knoxville', 'memphis' and 'nashville' as the "apps". The namespace directories map to Prisma Cloud namespaces as follows:
 
 | Directory | Prisma Namespace | Tag | Alias |
 | :--- | :--- | :--- | :--- |
@@ -34,22 +36,23 @@ Each directory contains one or more of the following:
 * Prisma Network Security config in YAML format
 * Scripts written in bash
 
-The directories cloud and group hold Prisma Network Security config that will be applied to the cloud account and group (Kubernetes cluster). The directories Nashville, Memphis and Knoxville are each applications. Nashville and Memphis are virtually identical with the exception of their name. They contain a frontend and backend pod type. The backends form a cluster and the frontends talk to all of the backends. Frontends do not talk to each other. The backends for both also talk to the Nashville app database pod type. The Nashville app has only a single app type; the aforementioned database. The database pods create a cluster inside the Nashville app and accept incoming connections from Memphis and Knoxville backend pod types.
+The directories cloud and group hold Prisma Network Security config that will be applied to the cloud account and group (Kubernetes cluster). The app directories are each applications. Nashville and Memphis are virtually identical with the exception of their name. They contain a frontend and backend pod type. The backends form a cluster and the frontends talk to all of the backends. Frontends do not talk to each other. The backends for both also talk to the Nashville app database pod type. The Nashville app has only a single app type; the aforementioned database. The database pods create a cluster inside the Nashville app and accept incoming connections from Memphis and Knoxville backend pod types.
 
 ### Scripts
-The directories cloud, group, knoxville, memphis and nashville each contain a script named 'create' and 'delete'. The 'create' script is used to apply Kubernetes and/or Prisma configuration and the 'delete' script is used to remove said configuration. The directories memphis and knoxville also include a script called 'attack' that is used to cause the app to make unauthorized connections.
-
-The directory 'all' also holds a script named 'create' and 'delete'. These are convenience scripts that will call the create or delete script in each of the aforementioned directories in the correct order. 
+The namespace directories each contain a script named 'create' and 'delete'. The 'create' script is used to apply Kubernetes and/or Prisma configuration and the 'delete' script is used to remove said configuration. The app directories contain a script called 'attack' and 'shell'. The attack script will cause the app to attempt connections that it does not usually attempt. The shell script will give an interactive shell to a container within the app.
+The directory 'all', like the namespace directories, has a script named 'create' and 'delete'. These are convenience scripts that will call the create or delete script in each of the aforementioned directories in the correct order. 
 
 The order of 'create' is
 1. Cloud
 1. Group
-1. App (nashville, memphis, knoxville)
+1. App
 
 The order of 'delete' is
-1. App (nashville, memphis, knoxville)
+1. App
 1. Group
 1. Cloud
+
+The order of individual Apps is not of importance.
 
 ## Policy
 
@@ -92,16 +95,17 @@ all/delete
 ```
 
 ## POV
-Before starting the POV you should have poc-in-a-box up and running. We will be working from the Prisma Cloud console unless otherwise noted. We will also assume that you are working from "Network Security" and the namespace level is group (your Kubernetes cluster)
+Before starting the POV you should have poc-in-a-box up and running. We will be working from the Prisma Cloud console unless otherwise noted. We will also assume that you are working from "Network Security" and the namespace level is group (your Kubernetes cluster). 
 
-### Visibility
+### Objectives
 
-1. Go to AppDependencyMap
-1. Note the solid green flows between workloads (Hexagon Icons)
-..* in the same namespace
-..* in different namespaces
-1. Note the flows to/from networks (Square Icon) such as MetaDataAPI, Google, KubeDNS, etc
-1. Click on a flow and take note of the policy
-1. Go to Rulesets
-
+| Objective | Achieved |
+| :-------- | :----------------- |
+| App Visibility | |
+| Namespaces | |
+| Infra Rulesets (DNS, NTP) | |
+| App Rulesets (Nashville, Memphis, Knoxville | |
+| SecOps Rulesets (Guardrails) | |
+| External Networks | |
+| Enforcement Mode(s) (Learning/Discovery) | |
 
