@@ -108,4 +108,6 @@ Before starting the POV you should have poc-in-a-box up and running. We will be 
 | SecOps Rulesets (Guardrails) | |
 | External Networks | |
 | Enforcement Mode(s) (Learning/Discovery) | |
+| AppCreds | |
+| Automation (CICD) | |
 
