@@ -14,6 +14,15 @@ data:
           observationEnabled: false
           protocolPorts:
             - any
+        - action: Allow
+          logsDisabled: false
+          object:
+            - - '@org:cloudaccount={{.Values.org.cloudAccount}}'
+              - '@org:tenant={{.Values.org.tenant}}'
+              - 'externalnetwork:name=Google'
+          observationEnabled: false
+          protocolPorts:
+            - any
       propagate: true
       subject:
         - - '@org:cloudaccount={{.Values.org.cloudAccount}}'

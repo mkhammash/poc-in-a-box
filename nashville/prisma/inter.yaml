@@ -25,6 +25,16 @@ data:
           protocolPorts:
             - any
       name: database inter-app
+      outgoingRules:
+        - action: Allow
+          logsDisabled: false
+          object:
+            - - '@org:cloudaccount={{.Values.org.cloudAccount}}'
+              - '@org:tenant={{.Values.org.tenant}}'
+              - 'externalnetwork:name=Azure'
+          observationEnabled: false
+          protocolPorts:
+            - any
       propagate: true
       subject:
         - - "@org:cloudaccount={{.Values.org.cloudAccount}}"

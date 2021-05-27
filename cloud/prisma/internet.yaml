@@ -7,7 +7,37 @@ data:
         - 'externalnetwork:name=External'
       entries:
         - 0.0.0.0/0
-      name: RFC1918
+      name: Internet
+      propagate: true
+    - associatedTags:
+        - 'externalnetwork:name=Amazon'
+        - 'externalnetwork:name=Internet'
+        - 'externalnetwork:name=Any'
+        - 'externalnetwork:name=External'
+      entries:
+        - www.amazon.com
+        - '*.amazon.com'
+      name: Amazon
+      propagate: true
+    - associatedTags:
+        - 'externalnetwork:name=Azure'
+        - 'externalnetwork:name=Internet'
+        - 'externalnetwork:name=Any'
+        - 'externalnetwork:name=External'       
+      entries:
+        - www.azure.com
+        - '*.azure.com'
+      name: Azure
+      propagate: true
+    - associatedTags:
+        - 'externalnetwork:name=Google'
+        - 'externalnetwork:name=Internet'
+        - 'externalnetwork:name=Any'
+        - 'externalnetwork:name=External'
+      entries:
+        - google.com
+        - '*.google.com'
+      name: Google
       propagate: true
 identities:
   - externalnetwork

@@ -1,0 +1,7 @@
+
+region=us-east-2
+
+# Create AWS keypair
+aws ec2 create-key-pair --key-name mykey
+
+eksctl create cluster --name poppy --region us-east-2 --with-oidc --ssh-access --ssh-public-key julyconsole --managed
