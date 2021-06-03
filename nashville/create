@@ -41,11 +41,13 @@ function _main() {
   err "    -  Kubernetes deployment"
   doit kubectl apply -f "$PWD"/k8s/deployment.yaml || rc=3
 
-  [[ "$ISTIO_ENABLED" ]] && { 
-    err "    -  Kubernetes Istio"
-    doit kubectl apply -f "$PWD"/k8s/deployment.yaml || rc=3
+  [[ "$ISTIO_ENABLED" ]] && {
+    "$ISTIO_ENABLED" && {
+      err "    -  Kubernetes Istio"
+      doit kubectl apply -f "$PWD"/k8s/deployment.yaml || rc=3
+    }
   }
-  
+
   err "done"
 
   [[ "$NOBANNER" ]] || { cat ../.banner >&2; }
