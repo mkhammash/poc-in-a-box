@@ -2,9 +2,9 @@
 # Required config
 ###############################################################################
 
-export TENANT=806775361903163392
-export CLOUD=jody
-export GROUP=ek1-us-east-2-eksctl-io
+export TENANT=
+export CLOUD=
+export GROUP=
 
 export APOCTL_API="https://api.east-01.network.prismacloud.io"
 
