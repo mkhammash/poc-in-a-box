@@ -25,8 +25,7 @@ function _main() {
   local id
   id=$(apoctl api list namespaces -n "/$TENANT" -f name=="/$TENANT/$CLOUD" | jq -r '.[].ID')
   [[ "$id" ]] && {
-    #doit apoctl api update -n "/$TENANT" namespace "$id" -d '{ “tagPrefixes”: [ “app=”,"sim-account=” ] }'
-    doit apoctl api update -n "/$TENANT" namespace "$id" -d "$(yq e '' "$PWD"/prisma/tagprefixes.yaml -j)"
+    doit apoctl api update -n "/$TENANT" namespace "$id" -d "$(yq e '' "$PWD"/prisma/tagprefixes.yaml -j)" || rc=3
   }
 
   err "    - SecOps policy"
