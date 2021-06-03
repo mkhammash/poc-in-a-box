@@ -1,0 +1,12 @@
+#!/bin/bash
+
+function main() {
+  cd "$(dirname "$0")" || { err "unable to change directory"; return 2; }
+  ../nashville/"$(basename "$0")"
+  ../memphis/"$(basename "$0")"
+  ../knoxville/"$(basename "$0")"
+}
+
+function err() { echo "$@" 1>&2; }
+
+main "$@"
