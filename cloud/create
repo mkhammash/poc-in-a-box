@@ -23,7 +23,7 @@ function _main() {
 
   err "    - namespace tags"
   local id
-  id=$(apoctl api list namespaces -n "/$TENANT" -f name=="/$TENANT/$CLOUD" | jq -r '.[].ID')
+  id=$(apoctl api list namespaces -n "/$TENANT" -f name=="/$TENANT/$CLOUD" | jq -r '.[].ID' > /dev/null 2>&1)
   [[ "$id" ]] && {
     doit apoctl api update -n "/$TENANT/$CLOUD" namespace "$id" -d "$(yq e '' "$PWD"/prisma/tagprefixes.yaml -j)" || rc=3
   }
