@@ -1,0 +1,20 @@
+#!/bin/bash -e
+
+function main() {
+  
+  cd "$(dirname "$0")" || { err "unable to change directory"; return 2; }
+  err "restarting $(basename "$PWD")"
+
+  # shellcheck disable=SC2155
+  export PATH="../bin/scripts:../bin/$(uname | tr '[:upper:]' '[:lower:]')/$(uname -m):$PATH"
+
+  sanitycheck || { err "Failure creating $(basename "$PWD"); see above"; return $?; }
+
+  doit kubectl delete pods -n "$(basename "$PWD")" --all &
+
+  return 0
+}
+
+function err() { echo "$@" 1>&2; }
+
+main "$@"
