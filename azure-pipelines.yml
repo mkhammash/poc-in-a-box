@@ -5,15 +5,46 @@
 # trigger:
 # - master
 
-
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: refs/heads/main
 stages:
 - stage: Build
   jobs:
   - job: BuildJob
+    displayName: Agent
     pool:
       vmImage: ubuntu-latest
     steps:
-    - script: echo Building!
+    - checkout: self
+    - task: CmdLine@2
+      inputs:
+        script: |
+          echo Apoctl variables
+          echo $(APOCTL_CREDS)
+          echo $(APOCTL_NAMESPACE)
+    - task: CmdLine@2
+      displayName: Download Apoctl
+      inputs:
+        script: >
+          sudo curl -o /usr/local/bin/apoctl \
+            https://download.aporeto.com/apoctl/linux/apoctl && \
+          sudo chmod +x /usr/local/bin/apoctl
+    - task: CmdLine@2
+      displayName: Authenticates the pipeline with Prisma Cloud and list the Namespaces
+      inputs:
+        script: >-
+          apoctl auth verify
+
+          apoctl api list namespace
+    - task: CmdLine@2
+      displayName: List all namespaces
+      inputs:
+        script: >-
+          apoctl api list namespaces
+
 - stage: Test
   jobs:
   - job: TestOnWindows
