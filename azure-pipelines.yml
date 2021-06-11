@@ -80,7 +80,7 @@ stages:
       displayName: Create POC-in-Box
       inputs:
         script: |
-          cd poc-in-a-box
+          cd /home/vsts/work/1/s/poc-in-a-box
           export PATH=$PWD/bin/scripts:$PATH
           apoctl configure -n /$GROUP/$CLOUD -t $TOKEN
           all/create
