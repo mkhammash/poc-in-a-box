@@ -70,7 +70,7 @@ stages:
     - task: CmdLine@2
       displayName: Create POC-in-Box
       inputs:
-        script: >-
+        script: |
           cd poc-in-a-box
           export PATH=$PWD/bin/scripts:$PATH
           apoctl configure -n /$GROUP/$CLOUD -t $TOKEN
