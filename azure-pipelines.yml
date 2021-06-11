@@ -34,7 +34,7 @@ stages:
     - task: CmdLine@2
       inputs:
         script: |
-          echo Apoctl variables $APOCTL_CREDS $APOCTL_NAMESPACE
+          echo Apoctl variables $(APOCTL_CREDS) $(APOCTL_NAMESPACE)
     - task: CmdLine@2
       displayName: Download Apoctl
       inputs:
@@ -62,6 +62,7 @@ stages:
         mkdir ~/.kube
         mv $(kubeConfig.secureFilePath) ~/.kube/config
     - task: CmdLine@2
+      displayName: Check files in place
       inputs:
         script: |
           echo Check all the directories and files 
