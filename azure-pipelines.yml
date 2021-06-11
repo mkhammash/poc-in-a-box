@@ -6,7 +6,7 @@
 # - master
 variables:
   APOCTL_NAMESPACE: $(NS)
-  APOCTL_CREDS: $(CREDS)
+  # APOCTL_CREDS: $(CREDS)
 
 resources:
   repositories:
@@ -22,6 +22,15 @@ stages:
       vmImage: ubuntu-latest
     steps:
     - checkout: self
+    - task: DownloadSecureFile@1
+      name: aporetoCreds
+      displayName: 'Aporeto Creds'
+      inputs:
+        secureFile: 'azure-devops.json'
+
+    - script: |
+        echo Installing $(aporetoCreds.secureFilePath) to the trusted .apoctl directory...
+        mv $(caCertificate.secureFilePath) ~/.apoctl/default.creds
     - task: CmdLine@2
       inputs:
         script: |
