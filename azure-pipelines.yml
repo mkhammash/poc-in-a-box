@@ -6,6 +6,8 @@
 # - master
 variables:
   APOCTL_NAMESPACE: $(NS)
+  APOCTL_CREDS: $(CREDS)
+
 resources:
   repositories:
   - repository: self
@@ -20,9 +22,6 @@ stages:
       vmImage: ubuntu-latest
     steps:
     - checkout: self
-    - bash: |
-      env:
-        APOCTL_CREDS: $(CREDS)
     - task: CmdLine@2
       inputs:
         script: |
