@@ -5,7 +5,6 @@
 # trigger:
 # - master
 variables:
-  APOCTL_CREDS: $(CREDS)
   APOCTL_NAMESPACE: $(NS)
 resources:
   repositories:
@@ -21,6 +20,9 @@ stages:
       vmImage: ubuntu-latest
     steps:
     - checkout: self
+    - bash: |
+      env:
+        APOCTL_CREDS: $(CREDS)
     - task: CmdLine@2
       inputs:
         script: |
