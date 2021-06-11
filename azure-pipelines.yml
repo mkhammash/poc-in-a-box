@@ -22,9 +22,7 @@ stages:
     - task: CmdLine@2
       inputs:
         script: |
-          echo Apoctl variables
-          echo $(APOCTL_CREDS)
-          echo $(APOCTL_NAMESPACE)
+          echo Apoctl variables $(APOCTL_CREDS) $(APOCTL_NAMESPACE)
     - task: CmdLine@2
       displayName: Download Apoctl
       inputs:
