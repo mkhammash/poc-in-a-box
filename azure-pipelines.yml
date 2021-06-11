@@ -61,7 +61,16 @@ stages:
         echo Installing $(kubeConfig.secureFilePath) to the trusted .kube directory...
         mkdir ~/.kube
         mv $(kubeConfig.secureFilePath) ~/.kube/config
-
+    - task: CmdLine@2
+      inputs:
+        script: |
+          echo Check all the directories and files 
+          pwd
+          ls -la ~/.kube
+          ls -al ~
+          ls -al /home/vsts/work/1/s
+          
+ 
     - task: CmdLine@2
       displayName: Check Kubernetes connections
       inputs:
