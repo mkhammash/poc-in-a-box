@@ -47,6 +47,9 @@ stages:
       inputs:
         script: >-
           apoctl auth verify
+    - task: KubectlInstaller@0
+      inputs:
+        kubectlVersion: 'latest'
     - task: Kubernetes@1
       inputs:
         connectionType: 'Kubernetes Service Connection'
