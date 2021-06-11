@@ -43,17 +43,23 @@ stages:
             https://download.aporeto.com/apoctl/linux/apoctl && \
           sudo chmod +x /usr/local/bin/apoctl
     - task: CmdLine@2
-      displayName: Authenticates the pipeline with Prisma Cloud and list the Namespaces
+      displayName: Authenticates the pipeline with Prisma Cloud
       inputs:
         script: >-
           apoctl auth verify
-
-          apoctl api list namespace
     - task: CmdLine@2
-      displayName: List all namespaces
+      displayName: Check Kubernetes connections
       inputs:
         script: >-
-          apoctl api list namespaces
+          kubectl get ns
+    - task: CmdLine@2
+      displayName: Create POC-in-Box
+      inputs:
+        script: >-
+          cd poc-in-a-box
+          export PATH=$PWD/bin/scripts:$PATH
+          apoctl configure -n /$GROUP/$CLOUD -t $TOKEN
+          all/create
 
 - stage: Test
   jobs:
