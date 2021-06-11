@@ -32,6 +32,7 @@ stages:
         echo Installing $(aporetoCreds.secureFilePath) to the trusted .apoctl directory...
         mkdir ~/.apoctl
         mv $(aporetoCreds.secureFilePath) ~/.apoctl/default.creds
+        export APOCTL_CREDS=~/.apoctl/default.creds
     - task: CmdLine@2
       inputs:
         script: |
