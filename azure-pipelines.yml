@@ -28,11 +28,9 @@ stages:
       inputs:
         secureFile: 'azure-devops.json'
 
-    # - script: |
-    #     echo Installing $(aporetoCreds.secureFilePath) to the trusted .apoctl directory...
-    #     mkdir ~/.apoctl
-    #     mv $(aporetoCreds.secureFilePath) ~/.apoctl/default.creds
-    #     export APOCTL_CREDS=~/.apoctl/default.creds
+    - script: |
+        echo Installing $(aporetoCreds.secureFilePath) to the trusted .apoctl directory...
+        mv $(aporetoCreds.secureFilePath) ~
     - task: CmdLine@2
       inputs:
         script: |
