@@ -62,14 +62,6 @@ stages:
         mkdir ~/.kube
         mv $(kubeConfig.secureFilePath) ~/.kube/config
 
-    - task: Kubernetes@1
-      inputs:
-        connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceEndpoint: 'prisma-aks-microseg-prisma-aks-microseg-default-1623363932639'
-        command: 'get'
-        arguments: 'ns'
-        secretType: 'dockerRegistry'
-        containerRegistryType: 'Azure Container Registry'
     - task: CmdLine@2
       displayName: Check Kubernetes connections
       inputs:
