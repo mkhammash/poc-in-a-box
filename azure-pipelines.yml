@@ -4,9 +4,6 @@
 # https://aka.ms/yaml
 # trigger:
 # - master
-# variables:
-#  APOCTL_CREDS: $(APOCTL_CREDS) # this will not work because the secret variable needs to be mapped as env
-#  APOCTL_NAMESPACE: $(APOCTL_NAMESPACE) # this works because it's not a secret.
 
 resources:
   repositories:
@@ -25,7 +22,7 @@ stages:
     - task: CmdLine@2
       inputs:
         script: |
-          echo Apoctl variables $env:APOCTL_CREDS $env:APOCTL_NAMESPACE
+          echo Apoctl variables $APOCTL_CREDS $APOCTL_NAMESPACE
     - task: CmdLine@2
       displayName: Download Apoctl
       inputs:
