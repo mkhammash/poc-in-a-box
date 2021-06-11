@@ -30,7 +30,7 @@ stages:
 
     - script: |
         echo Installing $(aporetoCreds.secureFilePath) to the trusted .apoctl directory...
-        mv $(caCertificate.secureFilePath) ~/.apoctl/default.creds
+        mv $(aporetoCreds.secureFilePath) ~/.apoctl/default.creds
     - task: CmdLine@2
       inputs:
         script: |
