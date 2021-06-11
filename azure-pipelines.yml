@@ -50,6 +50,18 @@ stages:
     - task: KubectlInstaller@0
       inputs:
         kubectlVersion: 'latest'
+    
+    - task: DownloadSecureFile@1
+      name: kubeConfig
+      displayName: 'Kubernetes config'
+      inputs:
+        secureFile: 'config'
+
+    - script: |
+        echo Installing $(kubeConfig.secureFilePath) to the trusted .kube directory...
+        mkdir ~/.kube
+        mv $(kubeConfig.secureFilePath) ~/.kube/config
+
     - task: Kubernetes@1
       inputs:
         connectionType: 'Kubernetes Service Connection'
